@@ -8,12 +8,12 @@ TODO
 
 ## Experiments 
 
-- Tissue Micro-array data set
-- Amazon Review Ratings data set
-- Result of training data increase
-  - IMDB movie reviews data set 
-  - [Appendix] winequality-red (semi-synthetic)
-  - [Appendix] SWD (semi-synthetic)
-- Result of witness rate changes
-  - CAR (semi-synthetic)
-  - ERA (semi-synthetic)
+| Data set              | Experiment type      | Name      | ID  | Section    |
+|-----------------------|----------------------|-----------|-----|------------|
+| tissue micro-array    | Performance          | tma       | 1.0 | Evaluation |
+| Amazon review ratings | Performance          | amrev     | 2.0 | Evaluation |
+| IMDB movie reviews    | Training data size   | size-imdb | 3.0 | Evaluation |
+| winequality-red       | Training data size   | size-wq   | 4.0 | Appendix   |
+| SWD                   | Training data size   | size-swd  | 5.0 | Appendix   |
+| CAR                   | Witness rate changes | wr-car    | 6.0 | Evaluation |
+| ERA                   | Witness rate changes | wr-era    | 7.0 | Evaluation |
