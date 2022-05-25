@@ -1,3 +1,7 @@
+##----------------------------------------------------------------------------#
+#' Data utility functions for omisvm-sims
+##----------------------------------------------------------------------------#
+
 #' Safer version of sample
 .resample <- function(x, ...) x[sample.int(length(x), ...)]
 
@@ -81,4 +85,3 @@ make_mil_or_data_sets_from_wr <- function(df, n_versions, witness_rates, sim_nam
   }
   if (verbose) cat("Done")
 }
-

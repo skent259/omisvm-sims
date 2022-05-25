@@ -10,10 +10,10 @@ TODO
 
 | Data set              | Experiment type      | Name      | ID  | Section    |
 |-----------------------|----------------------|-----------|-----|------------|
-| tissue micro-array    | Performance          | tma       | 1.0 | Evaluation |
-| Amazon review ratings | Performance          | amrev     | 2.0 | Evaluation |
+| Amazon review ratings | Performance          | per-amrev | 1.0 | Evaluation |
+| tissue micro-array    | Performance          | per-tma   | 2.0 | Evaluation |
 | IMDB movie reviews    | Training data size   | size-imdb | 3.0 | Evaluation |
-| winequality-red       | Training data size   | size-wq   | 4.0 | Appendix   |
-| SWD                   | Training data size   | size-swd  | 5.0 | Appendix   |
+| SWD                   | Training data size   | size-swd  | 4.0 | Appendix   |
+| winequality-red       | Training data size   | size-wq   | 5.0 | Appendix   |
 | CAR                   | Witness rate changes | wr-car    | 6.0 | Evaluation |
 | ERA                   | Witness rate changes | wr-era    | 7.0 | Evaluation |
