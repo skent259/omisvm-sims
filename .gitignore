@@ -1,0 +1,44 @@
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+.RDataTmp
+
+# User-specific files
+.Ruserdata
+
+# RStudio files
+.Rproj.user/
+
+# R Environment Variables
+.Renviron
+
+# R data set files
+*.rds 
+
+# Ignore directory
+ignore/
+
+*.DS_Store
+
+# R Markdown and output
+*.Rmd
+*.html
+
+# Figures
+fig/
+
+# Condor
+*.log
+*.err
+*.out
+log-time_*
+error-*
+
+# Output 
+
+# Data
+*.csv
+debug/
