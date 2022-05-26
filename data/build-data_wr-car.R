@@ -17,7 +17,7 @@ source(here("data/utils.R"))
 
 name <- "wr-car"
 sim <- "6.0"
-raw_file <- "php2jDIhh.csv"
+raw_file <- "car.csv"
 y_inst <- "class"
 
 out_dir <- glue("data/{name}/processed")

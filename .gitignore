@@ -43,4 +43,7 @@ output/wr-era/*
 
 # Data
 *.csv
+*.data
+*.arff
+*.names
 debug/

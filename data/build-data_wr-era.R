@@ -17,7 +17,7 @@ source(here("data/utils.R"))
 
 name <- "wr-era"
 sim <- "7.0"
-raw_file <- "ERA.csv"
+raw_file <- "era.csv"
 y_inst <- "out1"
 
 out_dir <- glue("data/{name}/processed")
