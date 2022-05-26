@@ -43,8 +43,8 @@ output_fname <- glue("sim-{name}-{sim}-{step}-results_i={str_pad(i, 4, pad = 0)}
 output_fname <- here(output_dir, output_fname)
 gs_fname <- here(output_dir, glue("gridsearch-spec_{name}.rds"))
 
-if (!dir.exists(output_dir)) {
-  dir.create(output_dir, recursive = TRUE)
+if (!dir.exists(here(output_dir))) {
+  dir.create(here(output_dir), recursive = TRUE)
 }
 
 ## Parameters for simulations -------------------------------------------------#

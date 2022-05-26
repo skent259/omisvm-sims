@@ -38,6 +38,8 @@ log-time_*
 error-*
 
 # Output 
+output/wr-car/*
+output/wr-era/*
 
 # Data
 *.csv
