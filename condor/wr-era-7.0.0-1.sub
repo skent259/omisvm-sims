@@ -5,14 +5,14 @@ executable  =   /s/bin/R
 batch_name  =   wr-era-7.0.0-1
 initialdir  =   /ua/spkent/multiple-instance-learning/simulations/omisvm-sims
 input		=   sim/wr-era-7.0.0-1.R
-arguments	=   --vanilla --args 7.0.0 $(Process) 200 /z/Comp/spkent/simulation/omisvm-sims/6.0 /z/Comp/spkent/simulation/omisvm-sims/data/wr-era
+arguments	=   --vanilla --args 7.0.0 $(Process) 100 /z/Comp/spkent/simulation/omisvm-sims/6.0 /z/Comp/spkent/simulation/omisvm-sims/data/wr-era
 environment =   "GUROBI_HOME=/s/pkg/linux64/gurobi/gurobi910/linux64 LD_LIBRARY_PATH=/s/pkg/linux64/gurobi/gurobi910/linux64/lib GRB_LICENSE_FILE=/s/pkg/linux64/gurobi/gurobi.lic" 
 
 request_cpus = 1
 request_memory = 3000M
 
-# only run 1000/3 = 333 jobs at once 
-concurrency_limits = spkent:3
+# only run 1000/5 = 200 jobs at once 
+concurrency_limits = spkent:5
 
 # -----
 # Send the job to Held state on failure.
@@ -26,5 +26,5 @@ output		=	condor/7.0.0/out/$(Process).out
 error       =   condor/7.0.0/err/$(Process).err
 log         =   condor/7.0.0/log/$(Process).log
 
-queue 1
+queue 4950
 
