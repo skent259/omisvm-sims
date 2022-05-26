@@ -228,11 +228,10 @@ evaluate_model <- function(row, df, train, test, data_param, verbose = TRUE) {
   
   if (missing(df)) {
     df <- read_csv(row$name) 
-    df <- mildsvm::as_mi_df(df, data_param$bag_label, data_param$bag_name, data_param$inst_label)
   }
+  df <- mildsvm::as_mi_df(df, data_param$bag_label, data_param$bag_name, data_param$inst_label)
   train_df <- df[train, , drop = FALSE]
   test_df <- df[test, , drop = FALSE]
-  
   tryCatch({
     benchmark <- microbenchmark({
       
