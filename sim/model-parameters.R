@@ -16,12 +16,18 @@ library(mildsvm)
 #'   `sigma` for radial kernel
 #' @return A tibble with columns `fun_name`, `fun`, `cost`, `h`, `method`,
 #'   `control`, and `cost_eta` representing functions and arguments to use 
-get_model_param <- function(n_cols, sim = "X.0.0") {
+get_model_param <- function(n_cols, sim = "X.0.0", n_sigma = 3) {
   if (sim == "X.0.0") {
     .cost <- c(0.1, 10, 1000)
     .h <- c(0.1, 10, 1000)
     .cost_eta <- c(0.1, 10, 1000)
-    .sigma <- (1/n_cols) * 2 ^ c(-1, 0, 1)
+
+    .sigma <- switch(
+      n_sigma, 
+      1/n_cols, # 1
+      NULL, # 2
+      (1/n_cols) * 2 ^ c(-1, 0, 1) # 3
+    )
     
     dplyr::bind_rows(
       # OMI-SVM (proposed)

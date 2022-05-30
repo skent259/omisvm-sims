@@ -46,7 +46,7 @@ output_fname <- glue("sim-{name}-{sim}-{step}-results_i={str_pad(i, 4, pad = 0)}
 output_fname <- here(output_dir, output_fname)
 step1_fname <- glue("omisvm-sims-results-{name}-{sim}-1.rds")
 step1_fname <- here(output_dir, step1_fname)
-# gs_fname <- here(output_dir, glue("gridsearch-spec_{name}.rds"))
+gs_fname <- here(output_dir, glue("gridsearch-spec_{name}.rds"))
 
 if (!dir.exists(here(output_dir))) {
   dir.create(here(output_dir), recursive = TRUE)
@@ -93,8 +93,14 @@ eval_spec <-
   slice_max(order_by = mean_metric, n = 1, with_ties = FALSE) %>% 
   ungroup()
 
-eval_spec <- eval_spec %>% select(-mzoe, -mae, -time, -sigma, -option)
+gs_spec_w_train_cols <- readRDS(gs_fname)
+
+eval_spec <- 
+  eval_spec %>% 
+  select(-mzoe, -mae, -time, -sigma, -option) %>%
+  left_join(gs_spec_w_train_cols, by = c("rep", "name", "fold", "gs_fold"))
 eval_spec_this_batch <- slice(eval_spec, batch_index(i, batch_size))
+# eval_spec_this_batch <- eval_spec %>% group_by(fun, method) %>% slice_head(n = 1) %>% slice(batch_index(i, batch_size))
 
 print(eval_spec)
 print(eval_spec_this_batch)
@@ -114,5 +120,6 @@ out <- eval_spec_this_batch %>%
 ## Save output ----------------------------------------------------------------#
 print(out)
 out <- out %>% select(-test, -train, -val)
+out$metric <- metric
 saveRDS(out, output_fname)
 

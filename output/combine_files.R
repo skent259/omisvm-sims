@@ -1,5 +1,7 @@
 library(glue)
 library(here)
+library(dplyr)
+source(here("sim/utils.R")) # for `set_default()`
 
 #' Combine RDS files
 #' @param dir Directory that files are located in.
@@ -15,19 +17,10 @@ combine_files <- function(dir, pattern) {
 args = commandArgs(trailingOnly = TRUE)
 print(args)
 
-result_dir <- args[1]
-sim <- args[2]
-step <- args[3]
-output_dir <- args[4]
-
-#' Set defaults for interactive session 
-set_default <- function(.x, val) { 
-  if(is.na(.x)) val else .x 
-}
-result_dir <- set_default(result_dir, "output/3.0")
-sim <- set_default(sim, "3.0.0")
-step <- set_default(step, 1)
-output_dir <- set_default(output_dir, result_dir)
+result_dir <- args[1] %>% set_default("output/6.0")
+sim <- args[2] %>% set_default("wr-car-6.0.0")
+step <- args[3] %>% set_default(1)
+output_dir <- args[4] %>% set_default(result_dir)
 
 ## Combine files and save -----------------------------------------------------#
 sim_files_pattern <- glue("sim-{sim}-{step}-results_")
