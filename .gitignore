@@ -36,6 +36,9 @@ fig/
 *.out
 log-time_*
 error-*
+*.tar.gz
+.per-tma-pkg/
+.bash_history
 
 # Output 
 output/wr-car/*

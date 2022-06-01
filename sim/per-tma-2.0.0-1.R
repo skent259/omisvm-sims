@@ -14,7 +14,6 @@ library(moments)
 library(mildsvm) # run on 0.3.1.9011
 source(here("sim/utils.R"))
 source(here("sim/model-parameters.R"))
-# source(here("analysis/utils.R"))
 
 name <- "per-tma"
 
@@ -87,7 +86,7 @@ gs_spec_this_batch <-
   select(rep, fold, gs_fold) %>% 
   expand_grid(model_param) %>% 
   slice(batch_index(i, batch_size)) %>% 
-  left_join(gridsearch_spec, by = c("rep", "name", "fold", "gs_fold"))
+  left_join(gridsearch_spec, by = c("rep", "fold", "gs_fold"))
 # gs_spec_this_batch <- gridsearch_spec %>%
 #   select(rep, fold, gs_fold) %>%
 #   expand_grid(model_param) %>%
