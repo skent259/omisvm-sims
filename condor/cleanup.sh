@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sim="6.0.0"
+sim="7.0.0"
 step="1"
 cd $sim 
 
