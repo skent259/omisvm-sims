@@ -42,7 +42,7 @@ print(list(sim = sim, i = i, batch_size = batch_size,
 
 ## Output file ----------------------------------------------------------------#
 step <- "2"
-output_fname <- glue("sim-{name}-{sim}-{step}-results_i={str_pad(i, 4, pad = 0)}.rds")
+output_fname <- glue("sim-{name}-{sim}-{step}-results_i={str_pad(i, 4, pad = 0)}-{metric}.rds")
 output_fname <- here(output_dir, output_fname)
 step1_fname <- glue("omisvm-sims-results-{name}-{sim}-1.rds")
 step1_fname <- here(output_dir, step1_fname)
