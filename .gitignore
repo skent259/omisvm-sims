@@ -41,6 +41,7 @@ error-*
 .bash_history
 
 # Output 
+output/per-tma/*
 output/wr-car/*
 output/wr-era/*
 

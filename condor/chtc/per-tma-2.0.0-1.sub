@@ -16,8 +16,8 @@ transfer_input_files = .per-tma-pkg/to-transfer.tar.gz, condor/chtc/packages.tar
 
 # RESOURCES
 request_cpus = 1
-request_memory = 3GB
-request_disk = 4GB
+request_memory = 2GB
+request_disk = 2GB
 requirements = (HasChtcSoftware == true)
 # Requirements = (Target.HasCHTCStaging == true)
 

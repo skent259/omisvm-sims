@@ -22,6 +22,7 @@ batch_size="30"
 Rscript sim/per-tma-2.0.0-1.R $sim $i $batch_size # use default output_dir, data_dir
 
 # TODO: zip up the output
+rm output/per-tma/gridsearch-spec_per-tma.rds
 tar -czf sim-per-tma-2.0.0-1_i=$i.tar.gz output/
 
 # clean-up 
