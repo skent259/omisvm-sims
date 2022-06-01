@@ -26,5 +26,5 @@ output		=	condor/7.0.0/out/$(metric)_$(Process).out
 error       =   condor/7.0.0/err/$(metric)_$(Process).err
 log         =   condor/7.0.0/log/$(metric)_$(Process).log
 
-queue 50 metric in (mae, mzoe)
+queue 500 metric in (mae, mzoe)
 
