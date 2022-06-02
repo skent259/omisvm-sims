@@ -23,10 +23,38 @@ for (x in level_1) {
   }
 }
 
+## per-amerev 1.0 ----------------------------------------------------------------#
+
+# Dataset link that I used: http://sifaka.cs.uiuc.edu/~wang296/Data/
+# NOTE: seems to be loading slow, unsure why
+
+# TODO: download data to raw folder
+# TODO: add information about conda environment needed (used 3.8.8 base)
+# system('python data/per-amrev/process-data.py')
+
+
 ## per-tma 2.0 ----------------------------------------------------------------#
 
 # For now, just pull in "tma_stage_imputations_1.0.csv" from old tma simulations
 # For later, should run scripts 
+
+## size-imdb 3.0 --------------------------------------------------------------#
+
+raw_dir <- "data/size-imdb/raw"
+
+f1 <- download.file(
+  "https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz", 
+  here(raw_dir, "aclImdb_v1.tar.gz"), 
+  method = "auto"
+)
+
+.warn_file_download(f1, f2, name = "wr-car 6.0")
+
+try({
+  system(glue("tar -xzf {raw_dir}/aclImdb_v1.tar.gz"))
+  # check directory structure
+  system("python data/build-data_size-imdb.py")
+})
 
 ## wr-car 6.0 -----------------------------------------------------------------#
 

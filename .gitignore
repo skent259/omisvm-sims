@@ -50,4 +50,8 @@ output/wr-era/*
 *.data
 *.arff
 *.names
+*.json
+*.ipynb
+*.pkl
+*.npz
 debug/
