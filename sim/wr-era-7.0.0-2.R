@@ -90,7 +90,7 @@ eval_spec <-
   gridsearch_spec %>% 
   group_by(across(all_of(model_vars))) %>% 
   mutate(across(time, list(sum = ~sum(.x, na.rm = TRUE)))) %>% 
-  slice_max(order_by = mean_metric, n = 1, with_ties = FALSE) %>% 
+  slice_min(order_by = mean_metric, n = 1, with_ties = FALSE) %>% 
   ungroup()
 
 gs_spec_w_train_cols <- readRDS(gs_fname)
