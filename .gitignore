@@ -42,6 +42,7 @@ error-*
 
 # Output 
 output/per-tma/*
+output/size-imdb/*
 output/wr-car/*
 output/wr-era/*
 
@@ -55,3 +56,4 @@ output/wr-era/*
 *.pkl
 *.npz
 debug/
+data/size-imdb/raw/aclImdb/

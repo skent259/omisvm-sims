@@ -104,12 +104,11 @@ define_gridsearch_specs <- function(
     for (ds in 1:length(cv_param$train)) {
       
       set.seed(rep_seeds[ds])
-      args <- transpose(dots$data_param)[[ds]]
-      train_ds <- do.call(dots$data_fun, args)
-      
-      y_ <- train_ds[[y]]
-      bags_ <- train_ds[[bags]]
-      
+      train_ds <- read_csv(cv_param$train[ds])
+
+      y_ <- train_ds[[dots$data_param$bag_label]]
+      bags_ <- train_ds[[dots$data_param$bag_name]]
+        
       set.seed(rep_seeds[ds])
       order <- sample(1:length(y_))
       gs_folds <- select_cv_folds(y_[order], bags_[order], n_fold = cv_param$nfolds_gs)
@@ -215,23 +214,38 @@ define_gridsearch_specs <- function(
 #' @param data_param A list with arguments specifying the `bag_label`,
 #'   `bag_name`, and `inst_label` of `df`
 #' @param verbose A logical for whether to output useful information
+#' @param ... Arguments passed to other functions including
+#' - `col_select`: pass to `read_csv()` when using the `'train-test'` approach
+#' - `test_info`: passed to `build_test_df()` for review data
 #'   
 #' @return A data.frame with performance metrics such as 
 #' - `auc` The area under ROC based on the bag-level predictions
 #' - `time` The time taken for fitting and prediction
 #' - `mipgap` The reported gap from the MIP procedure in Gurobi, if applicable
-evaluate_model <- function(row, df, train, test, data_param, verbose = TRUE) {
+evaluate_model <- function(row, df, train, test, data_param, verbose = TRUE, ...) {
+  dots <- list(...)
   if (verbose) {
     cat("Function:", row$fun_name, ", ", 
         "Method:", row$method, "\n")
   }
-  
-  if (missing(df)) {
-    df <- read_csv(row$name) 
+  if ("test_name" %in% names(row) & "train_name" %in% names(row)) {
+    # matches `define_gridsearch_specs(method = "train-test")` 
+    train_df <- read_csv(row$train_name, col_select = dots$col_select)
+    train_df <- train_df[train, , drop = FALSE]
+    train_df <- mildsvm::as_mi_df(train_df, data_param$bag_label, data_param$bag_name, data_param$inst_label)
+
+    test_df <- build_test_df(row$test_name, dots$test_info)
+    test_df <- test_df[test, , drop = FALSE]
+    test_df <- mildsvm::as_mi_df(test_df, data_param$bag_label, data_param$bag_name, data_param$inst_label)
+  } else {
+    if (missing(df)) {
+      df <- read_csv(row$name) 
+    }
+    df <- mildsvm::as_mi_df(df, data_param$bag_label, data_param$bag_name, data_param$inst_label)
+    train_df <- df[train, , drop = FALSE]
+    test_df <- df[test, , drop = FALSE]
   }
-  df <- mildsvm::as_mi_df(df, data_param$bag_label, data_param$bag_name, data_param$inst_label)
-  train_df <- df[train, , drop = FALSE]
-  test_df <- df[test, , drop = FALSE]
+  
   tryCatch({
     benchmark <- microbenchmark({
       
@@ -265,4 +279,54 @@ evaluate_model <- function(row, df, train, test, data_param, verbose = TRUE) {
     cat("ERROR :",conditionMessage(e), "\n")
     return(tibble(mzoe = NA, mae = NA, time = NA))
   })
+}
+
+#' Build test data frame for reviews data 
+#' 
+#' This function exists to convserve space in the test data. Since they are typically
+#' large, we pull in the .pkl and .npz files and reconstruct the data from them. 
+#' 
+#' @param fname The base file name. This is typically the test_name
+#' @param test_info A data frame with 3 columns, `., rating, review_id` that provides 
+#'   the information of the test set. We add the `pca_features` to this
+build_test_df <- function(fname, test_info) {
+  if (str_detect(fname, "train")) {
+    return(read_csv(fname))
+  } else {
+    # Need to pull together from model and tfidf
+    library(reticulate)
+    # use_condaenv("r-reticulate")
+    np <- import("numpy")
+    scipy <- import("scipy")
+    
+    # Load in the saved tfidf features and pca model
+    tfidf_fname <- fname %>% 
+      str_replace_all("pca_test", "tfidf_test") %>% 
+      str_replace_all(".csv", ".npz")
+    tfidf_test <- scipy$sparse$load_npz(tfidf_fname)
+    
+    # work with tfidf_test in batches, then transform
+    split_in_half <- function(x) {
+      n <- nrow(x)
+      batch_sz <- ceiling(n / 2)
+      grp <- rep(1:2, each = batch_sz)[1:n]
+
+      out <- list(x[which(grp == 1), ], x[which(grp == 2), ])
+      return(out)
+    }
+    tfidf_test <- split_in_half(tfidf_test)
+    
+    model_fname <- fname %>% 
+      str_replace_all("imdb_pca_test", "imdb_pca-model") %>% 
+      str_replace_all(".csv", ".pkl")
+    pca <- py_load_object(model_fname, pickle = "pickle")
+    
+    # pca_features <- pca$transform(as.matrix(tfidf_test))
+    pca_features <- map(tfidf_test, ~pca$transform(as.matrix(.x)))
+    pca_features <- do.call(rbind, pca_features)
+
+    colnames(pca_features) <- glue::glue("pca_{1:200}")
+    test_df <- bind_cols(test_info, as_tibble(pca_features))
+    return(test_df)
+  }
 }

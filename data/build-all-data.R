@@ -1,6 +1,7 @@
 library(here)
 library(readr)
 library(foreign)
+library(glue)
 
 data_dir <- "data"
 
@@ -48,11 +49,10 @@ f1 <- download.file(
   method = "auto"
 )
 
-.warn_file_download(f1, f2, name = "wr-car 6.0")
+.warn_file_download(f1, name = "size-imdb 3.0")
 
 try({
-  system(glue("tar -xzf {raw_dir}/aclImdb_v1.tar.gz"))
-  # check directory structure
+  system(glue("tar -xzf {raw_dir}/aclImdb_v1.tar.gz -C {raw_dir}"))
   system("python data/build-data_size-imdb.py")
 })
 
