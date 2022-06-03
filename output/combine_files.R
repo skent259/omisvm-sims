@@ -1,7 +1,6 @@
 library(glue)
 library(here)
 library(dplyr)
-source(here("sim/utils.R")) # for `set_default()`
 
 #' Combine RDS files
 #' @param dir Directory that files are located in.
@@ -11,6 +10,11 @@ combine_files <- function(dir, pattern) {
     res <- lapply(files, FUN = readRDS)
     res <- dplyr::bind_rows(res)
     return(res)
+}
+
+#' Set defaults for interactive session 
+set_default <- function(.x, val) { 
+  if(is.na(.x)) val else .x 
 }
 
 ## Command line arguments -----------------------------------------------------#
