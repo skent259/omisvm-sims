@@ -162,8 +162,8 @@ out.columns = ["rating", "review_id"]
 out.to_csv(proc_dir + f'imdb_rating-info_test.csv')
 
 # %%
-n_rep = 20
-n_train_list = [30 * i for i in range(1, 11)]
+n_rep = 10
+n_train_list = [30] + [150 * i for i in range(1, 9)]
 rng = np.random.default_rng(8)
 
 
