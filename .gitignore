@@ -38,11 +38,13 @@ log-time_*
 error-*
 *.tar.gz
 .per-tma-pkg/
-.bash_history
+.size-wq-pkg/
+*.bash_history
 
 # Output 
 output/per-tma/*
 output/size-imdb/*
+output/size-wq/*
 output/wr-car/*
 output/wr-era/*
 
