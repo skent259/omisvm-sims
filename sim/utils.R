@@ -215,6 +215,8 @@ define_gridsearch_specs <- function(
 #'   `bag_name`, and `inst_label` of `df`
 #' @param verbose A logical for whether to output useful information
 #' @param ... Arguments passed to other functions including
+#' - `train_name`: for reading train data from file
+#' - `test_name`: for reading test data from file
 #' - `col_select`: pass to `read_csv()` when using the `'train-test'` approach
 #' - `test_info`: passed to `build_test_df()` for review data
 #'   
@@ -228,23 +230,20 @@ evaluate_model <- function(row, df, train, test, data_param, verbose = TRUE, ...
     cat("Function:", row$fun_name, ", ", 
         "Method:", row$method, "\n")
   }
-  if ("test_name" %in% names(row) & "train_name" %in% names(row)) {
-    # matches `define_gridsearch_specs(method = "train-test")` 
-    train_df <- read_csv(row$train_name, col_select = dots$col_select)
-    train_df <- train_df[train, , drop = FALSE]
-    train_df <- mildsvm::as_mi_df(train_df, data_param$bag_label, data_param$bag_name, data_param$inst_label)
-
-    test_df <- build_test_df(row$test_name, dots$test_info)
-    test_df <- test_df[test, , drop = FALSE]
-    test_df <- mildsvm::as_mi_df(test_df, data_param$bag_label, data_param$bag_name, data_param$inst_label)
-  } else {
-    if (missing(df)) {
-      df <- read_csv(row$name) 
-    }
-    df <- mildsvm::as_mi_df(df, data_param$bag_label, data_param$bag_name, data_param$inst_label)
-    train_df <- df[train, , drop = FALSE]
-    test_df <- df[test, , drop = FALSE]
-  }
+  
+  dfs <- read_train_test(
+    df, train, test,
+    name = row$name,
+    bag_label = data_param$bag_label, 
+    bag_name = data_param$bag_name,
+    inst_label = data_param$inst_label,
+    train_name = dots$train_name,
+    test_name = dots$test_name,
+    col_select = dots$col_select,
+    test_info = dots$test_info
+  )
+  train_df <- dfs[["train"]]
+  test_df <- dfs[["test"]]
   
   tryCatch({
     benchmark <- microbenchmark({
@@ -276,9 +275,53 @@ evaluate_model <- function(row, df, train, test, data_param, verbose = TRUE, ...
     ))
   },
   error = function(e) {
-    cat("ERROR :",conditionMessage(e), "\n")
+    cat("ERROR :", conditionMessage(e), "\n")
     return(tibble(mzoe = NA, mae = NA, time = NA))
   })
+}
+
+#' Logic for reading test and train data 
+#' 
+#' @inheritParams evaluate_model
+#' @param bag_label passed to `mildsvm::as_mi_df()`
+#' @param bag_name passed to `mildsvm::as_mi_df()`
+#' @param inst_label passed to `mildsvm::as_mi_df()`
+#' @param train_name for reading train data from file
+#' @param test_name for reading test data from file
+#' @param col_select pass to `read_csv()` when using the `'train-test'` approach
+#' @param test_info passed to `build_test_df()` for review data
+#' 
+#' @return A list of two data frames: `'train'` and `'test'`. 
+read_train_test <- function(df, train, test, name = NULL, 
+                            bag_label = NULL, bag_name = NULL, inst_label = NULL, 
+                            train_name = NULL, test_name = NULL, col_select = NULL,
+                            test_info = NULL) {
+  if (!is.null(test_name) & !is.null(train_name)) {
+    # matches `define_gridsearch_specs(method = "train-test")` 
+    train_df <- read_csv(train_name, col_select = col_select)
+    train_df <- train_df[train, , drop = FALSE]
+    train_df <- mildsvm::as_mi_df(train_df, bag_label, bag_name, inst_label)
+    
+    if (file.exists(test_name)) {
+      test_df <- read_csv(test_name, col_select = col_select)
+    } else {
+      test_df <- build_test_df(test_name, test_info)
+    }
+    test_df <- test_df[test, , drop = FALSE]
+    test_df <- mildsvm::as_mi_df(test_df, bag_label, bag_name, inst_label)
+  } else {
+    # matches `define_gridsearch_specs(method = "repeated k-fold", "read df k-fold")` 
+    if (missing(df)) {
+      df <- read_csv(name) 
+    }
+    df <- mildsvm::as_mi_df(df, bag_label, bag_name, inst_label)
+    train_df <- df[train, , drop = FALSE]
+    test_df <- df[test, , drop = FALSE]
+  }
+  return(list(
+    "train" = train_df,
+    "test" = test_df
+  ))
 }
 
 #' Build test data frame for reviews data 
