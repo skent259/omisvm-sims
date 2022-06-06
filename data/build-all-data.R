@@ -2,6 +2,7 @@ library(here)
 library(readr)
 library(foreign)
 library(glue)
+library(magrittr)
 
 data_dir <- "data"
 
@@ -54,6 +55,44 @@ f1 <- download.file(
 try({
   system(glue("tar -xzf {raw_dir}/aclImdb_v1.tar.gz -C {raw_dir}"))
   system("python data/build-data_size-imdb.py")
+})
+
+## size-swd 4.0 ----------------------------------------------------------------#
+
+raw_dir <- "data/size-swd/raw"
+
+f1 <- download.file(
+  "https://www.openml.org/data/download/53562/SWD.arff", 
+  here(raw_dir, "SWD.arff"), 
+  method = "auto"
+)
+
+.warn_file_download(f1, name = "size-swd 4.0")
+try({
+  here(raw_dir, "SWD.arff") %>% 
+    foreign::read.arff() %>% 
+    write_csv(here(raw_dir, "swd.csv"))
+  source(here(data_dir, "build-data_size-swd.R"))  
+})
+
+## size-wq 5.0 ----------------------------------------------------------------#
+
+raw_dir <- "data/size-wq/raw"
+
+f1 <- download.file(
+  "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality.names", 
+  here(raw_dir, "winequality.names"), 
+  method = "auto"
+)
+f2 <- download.file(
+  "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv", 
+  here(raw_dir, "winequality-red.csv"), 
+  method = "auto"
+)
+
+.warn_file_download(f1, f2, name = "size-wq 5.0")
+try({
+  source(here(data_dir, "build-data_size-wq.R"))  
 })
 
 ## wr-car 6.0 -----------------------------------------------------------------#
