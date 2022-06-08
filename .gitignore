@@ -38,6 +38,7 @@ log-time_*
 error-*
 *.tar.gz
 .per-tma-pkg/
+.size-swd-pkg/
 .size-wq-pkg/
 *.bash_history
 
