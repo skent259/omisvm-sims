@@ -36,6 +36,8 @@ fig/
 *.out
 log-time_*
 error-*
+re-run-*
+held-*
 *.tar.gz
 .per-tma-pkg/
 .size-swd-pkg/
@@ -46,6 +48,7 @@ error-*
 output/per-tma/*
 output/size-imdb/*
 output/size-wq/*
+output/size-swd/*
 output/wr-car/*
 output/wr-era/*
 

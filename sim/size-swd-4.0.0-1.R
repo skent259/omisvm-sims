@@ -11,7 +11,7 @@ library(glue)
 library(microbenchmark)
 library(moments)
 # devtools::install_github("skent259/mildsvm", ref = "dev-version") 
-library(mildsvm) # run on 0.3.1.9011
+library(mildsvm) # run on 0.3.1.9013
 source(here("sim/utils.R"))
 source(here("sim/model-parameters.R"))
 
@@ -94,10 +94,10 @@ gs_spec_this_batch <-
   expand_grid(model_param) %>% 
   slice(batch_index(i, batch_size)) %>% 
   left_join(gridsearch_spec, by = gs_vars)
-gs_spec_this_batch <- gridsearch_spec %>%
-  select(all_of(gs_vars)) %>%
-  expand_grid(model_param) %>% group_by(fun) %>% slice_head(n = 1) %>%
-  left_join(gridsearch_spec, by = gs_vars) # one of each method
+# gs_spec_this_batch <- gridsearch_spec %>%
+#   select(all_of(gs_vars)) %>%
+#   expand_grid(model_param) %>% group_by(fun) %>% slice_head(n = 1) %>%
+#   left_join(gridsearch_spec, by = gs_vars) # one of each method
 
 ## Evaluate models in current batch -------------------------------------------#
 set.seed(8)

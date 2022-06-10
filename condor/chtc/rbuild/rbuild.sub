@@ -2,11 +2,11 @@
 # see https://chtc.cs.wisc.edu/uw-research-computing/r-jobs.html for use instructions
 
 universe = vanilla
-initialdir  = /home/spkent/omisvm-sims
-log = chtc/logs/interactive.log
+initialdir  = /home/spkent/omisvm-sims/condor/chtc
+log = log/interactive.log
 
 # Choose a version of R from the table above
-transfer_input_files = http://proxy.chtc.wisc.edu/SQUID/chtc/R412.tar.gz, condor/chtc/packages.tar.gz
+transfer_input_files = http://proxy.chtc.wisc.edu/SQUID/chtc/R412.tar.gz, packages.tar.gz
     
 +IsBuildJob = true
 requirements = (OpSysMajorVer =?= 7)
