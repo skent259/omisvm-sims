@@ -2,11 +2,11 @@
 
 # EXECUTION FILE
 universe    =   vanilla
-batch_name  =   size-wq-5.0.0-1
+batch_name  =   size-wq-5.0.0-2
 initialdir  =   /home/spkent/omisvm-sims
 
-executable  =   condor/chtc/size-wq-5.0.0-1.sh
-arguments   =   $(Process)
+executable  =   condor/chtc/size-wq-5.0.0-2.sh
+arguments   =   $(Step) $(metric)
 
 # FILE TRANSFER
 should_transfer_files = YES
@@ -16,15 +16,15 @@ transfer_input_files = .size-wq-pkg/to-transfer.tar.gz, condor/chtc/packages.tar
 
 # RESOURCES
 request_cpus = 1
-request_memory = 8GB
-request_disk = 8GB
-max_idle = 2000
+request_memory = 2GB
+request_disk = 2GB
 requirements = (HasChtcSoftware == true)
 # Requirements = (Target.HasCHTCStaging == true)
 
 # OUTPUT AND LOGGING
-output		=	condor/5.0.0/out/$(Process).out
-error       =   condor/5.0.0/err/$(Process).err
-log         =   condor/5.0.0/log/$(Process).log
+output		=	condor/5.0.0/out/$(metric)_$(Step).out
+error       =   condor/5.0.0/err/$(metric)_$(Step).err
+log         =   condor/5.0.0/log/$(metric)_$(Step).log
 
-queue 3960
+queue 1000 metric in (mae, mzoe)
+

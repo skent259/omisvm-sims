@@ -63,3 +63,7 @@ output/wr-era/*
 *.npz
 debug/
 data/size-imdb/raw/aclImdb/
+
+# Supplemental sim files
+sim/size-wq-5.0.0-1c.R
+sim/size-wq-5.0.0-1d.R
