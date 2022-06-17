@@ -62,6 +62,24 @@ process_data_tma <- function(result) {
   average_metric_over(res1, grp_vars)
 }
 
+process_data_size_imdb <- function(result, metric) {
+  res1 <- result %>% 
+    hoist(control, "option") %>%
+    mutate(
+      method_name = glue(
+        "{str_to_upper(fun_name)}",
+        "{ifelse(is.na(option), '', glue(' ({option})'))}",
+      ),
+      version = map_chr(train_name, ~extract_from_string(.x, i = 4, n_under = 4)),
+      nbag = map_chr(train_name, ~extract_from_string(.x, i = 5, n_under = 4))
+    ) %>%
+    select(method_name, sim, everything()) 
+  
+  grp_vars <- c("method_name", "fun", "method", "option", 
+                "nbag", "version", "metric")
+  average_metric_over(res1, grp_vars)
+}
+
 process_data_size <- function(result) {
   res1 <- result %>%
     hoist(control, "option", "sigma", .remove = FALSE) %>%
@@ -81,7 +99,6 @@ process_data_size <- function(result) {
   average_metric_over(res1, grp_vars)
 }
 
-
 process_data_wr <- function(result) {
   res1 <- result %>% 
     hoist(control, "option", "sigma", .remove = FALSE) %>% 
@@ -99,6 +116,7 @@ process_data_wr <- function(result) {
                 "name", "wr", "version", "metric")
   average_metric_over(res1, grp_vars)
 }
+
 
 plot_data_tma <- function(df, .metric) {
   df %>% 
@@ -126,6 +144,24 @@ plot_data_tma <- function(df, .metric) {
          y = NULL)
 }
 
+plot_data_size_imdb <- function(result, .metric) {
+  result %>% 
+    filter(metric == .metric) %>% 
+    ggplot(aes(x = as.numeric(nbag), y = mean_metric, color = method_name)) +
+    # geom_hline(yintercept = 0, color = "grey70") +
+    geom_quasirandom(width = 5, alpha = 0.3) +
+    stat_summary(geom = "line", fun = mean, size = 1.2) +
+    scale_x_continuous(breaks = c(30, 150*(1:8))) + 
+    scale_color_manual(name = NULL,
+                       limits = rev(methods_to_show()$method),
+                       labels = rev(methods_to_show()$short_name),
+                       values = rev(methods_to_show()$color)) +
+    theme_light() + 
+    theme(legend.position = "top") +
+    labs(x = "Number of training bags",
+         y = str_to_upper(.metric))
+}
+
 plot_data_size <- function(df, .metric) {
   df %>% 
     filter(metric == .metric) %>% 
@@ -145,7 +181,6 @@ plot_data_size <- function(df, .metric) {
     labs(x = "Number of training bags",
          y = str_to_upper(.metric))
 }
-
 
 plot_data_wr <- function(df, .metric) {
   df %>% 

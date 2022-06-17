@@ -51,6 +51,7 @@ output/size-wq/*
 output/size-swd/*
 output/wr-car/*
 output/wr-era/*
+copy-over.R
 
 # Data
 *.csv

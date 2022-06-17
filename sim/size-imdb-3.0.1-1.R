@@ -11,10 +11,9 @@ library(glue)
 library(microbenchmark)
 library(moments)
 # devtools::install_github("skent259/mildsvm", ref = "dev-version") 
-library(mildsvm) # run on 0.3.1.9011
+library(mildsvm) # run on 0.3.1.9013
 source(here("sim/utils.R"))
 source(here("sim/model-parameters.R"))
-# source(here("analysis/utils.R"))
 
 name <- "size-imdb"
 
@@ -24,7 +23,7 @@ name <- "size-imdb"
 #' @argument `batch_size` the number of models to run in this iteration
 #' @argument `output_dir` the directory to save output to
 #' @argument `data_dir` the directory where data lives
-args = commandArgs(trailingOnly = TRUE)
+args <- commandArgs(trailingOnly = TRUE)
 
 sim <- args[1] %>% set_default("3.0.0")
 i <- as.integer(args[2]) + 1
@@ -52,11 +51,10 @@ if (!dir.exists(here(output_dir))) {
 data_param <- list(
   bag_label = "rating",
   bag_name = "review_id"
-  # inst_label = "class"
 )
 n_cols <- 200
 
-model_param <- get_model_param(n_cols, sim = "X.0.0")
+model_param <- get_model_param(n_cols, sim = "X.0.1")
 
 data_names <- list.files(here(data_dir), full.names = TRUE)
 train_data_names <- data_names[str_detect(data_names, "train")]
@@ -110,6 +108,8 @@ out <- gs_spec_this_batch %>%
                           train = .x$train,
                           test = .x$val,
                           data_param = data_param,
+                          train_name = .x$train_name,
+                          test_name = .x$train_name,
                           test_info = test_info,
                           col_select = 2:203)) %>% 
   bind_cols(gs_spec_this_batch)

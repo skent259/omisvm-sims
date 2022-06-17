@@ -81,5 +81,58 @@ get_model_param <- function(n_cols, sim = "X.0.0", n_sigma = 3) {
         ))
       ),
     )
+  } else if (sim == "X.0.1") {
+    .cost <- c(0.1, 10, 1000)
+    .h <- c(0.1, 10, 1000)
+    .cost_eta <- c(0.1, 10, 1000)
+    
+    dplyr::bind_rows(
+      # OMI-SVM (proposed)
+      tidyr::expand_grid(
+        fun_name = "omisvm",
+        fun = list(mildsvm::omisvm), 
+        cost = .cost,
+        h = .h, 
+        method = c("qp-heuristic"), 
+        control = purrr::transpose(tidyr::expand_grid(
+          kernel = "linear",
+          time_limit = 600
+        ))
+      ),
+      # SI-SVOREXC
+      tidyr::expand_grid(
+        fun_name = "svor_exc",
+        fun = list(mildsvm::svor_exc),
+        cost = .cost,
+        method = c("smo"), 
+        control = purrr::transpose(tidyr::expand_grid(
+          kernel = "linear"
+        ))
+      ),
+      # MI-SVM (OVA)
+      tidyr::expand_grid(
+        fun_name = "misvm_orova",
+        fun = list(mildsvm::misvm_orova),
+        cost = .cost,
+        method = c("qp-heuristic"), 
+        control = purrr::transpose(tidyr::expand_grid(
+          kernel = "linear",
+          time_limit = 600
+        ))
+      ),
+      # MIOR (as written, corrected)
+      tidyr::expand_grid(
+        fun_name = "mior",
+        fun = list(mildsvm::mior), 
+        cost = .cost,
+        cost_eta = .cost_eta, 
+        method = c("qp-heuristic"), 
+        control = purrr::transpose(tidyr::expand_grid(
+          kernel = "linear",
+          time_limit = 600,
+          option = c("corrected", "xiao")
+        ))
+      ),
+    )
   }
 }
