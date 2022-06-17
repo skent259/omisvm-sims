@@ -16,8 +16,8 @@ transfer_input_files = .size-wq-pkg/to-transfer.tar.gz, condor/chtc/packages.tar
 
 # RESOURCES
 request_cpus = 1
-request_memory = 2GB
-request_disk = 2GB
+request_memory = 8GB
+request_disk = 8GB
 requirements = (HasChtcSoftware == true)
 # Requirements = (Target.HasCHTCStaging == true)
 

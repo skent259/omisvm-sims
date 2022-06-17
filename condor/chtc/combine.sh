@@ -7,7 +7,7 @@ export RHOME=$PWD/R
 export R_LIBS=$PWD/packages
 
 tar -xzf output.tar.gz 
-Rscript output/combine_files.R output/size-wq size-wq-5.0.0 1d output/size-wq
+Rscript output/combine_files.R output/size-wq size-wq-5.0.0 2 output/size-wq
 tar -czf output.tar.gz output/
 
 rm packages.tar.gz 
