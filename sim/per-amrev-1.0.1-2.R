@@ -1,5 +1,5 @@
 ##----------------------------------------------------------------------------#
-#' Simulation size-imdb-3.0.0
+#' Simulation per-amrev-1.0.0
 #'   Step 2 - Test set evaluation on optimal parameters
 #' 
 #' See simulation-spreadsheet.xlsx for details 
@@ -15,7 +15,7 @@ library(mildsvm) # run on 0.3.1.9013
 source(here("sim/utils.R"))
 source(here("sim/model-parameters.R"))
 
-name <- "size-imdb"
+name <- "per-amrev"
 
 ## Command line arguments -----------------------------------------------------#
 #' @argument `sim` the simulation number
@@ -26,15 +26,15 @@ name <- "size-imdb"
 #' @argument `metric` the metric to optimize over 
 args <- commandArgs(trailingOnly = TRUE)
 
-sim <- args[1] %>% set_default("3.0.0")
+sim <- args[1] %>% set_default("1.0.0")
 i <- as.integer(args[2]) + 1
 i <- i %>% set_default(1)
 batch_size <- as.integer(args[3])
-batch_size <- batch_size %>% set_default(2)
+batch_size <- batch_size %>% set_default(1)
 output_dir <- args[4] %>% set_default(glue("output/{name}"))
 data_dir <- args[5] %>% set_default(glue("data/{name}/processed"))
 metric <- args[6] %>% set_default("mae")
-# 700 runs at `batch_size` = 2, for 1400 total
+# 600 runs at `batch_size` = 1, for 600 total
 
 print(list(sim = sim, i = i, batch_size = batch_size, 
            output_dir = output_dir, data_dir = data_dir, metric = metric))
@@ -64,7 +64,6 @@ model_param <- get_model_param(n_cols, sim = "X.0.1")
 data_names <- list.files(here(data_dir), full.names = TRUE)
 train_data_names <- data_names[str_detect(data_names, "train")]
 test_data_names <- str_replace(train_data_names, "train", "test")
-test_info <- read_csv(file.path(data_dir, "imdb_rating-info_test.csv"), col_select = -1)
 
 cv_param <- list(
   nrep = 1,
@@ -117,7 +116,7 @@ out <- eval_spec_this_batch %>%
                           data_param = data_param,
                           train_name = .x$train_name,
                           test_name = .x$test_name,
-                          test_info = get_test_info(.x$test_name),
+                          test_info = test_info,
                           col_select = 2:203)) %>% 
   bind_cols(eval_spec_this_batch)
 

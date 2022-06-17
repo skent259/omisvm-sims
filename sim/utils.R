@@ -21,6 +21,16 @@ batch_index <- function(i, batch_size) {
   return(start:end)
 }
 
+#' Pull test_info file for per-amrev
+get_test_info <- function(test_fname) {
+  test_info_fname <- test_fname %>% 
+    str_replace_all("_pca_test_", "_rating-info_test_") %>%
+    str_remove_all("_i=.*.csv") %>% 
+    paste0(".csv")
+
+  read_csv(test_info_fname)
+}
+
 #' Cross-validation for MIL data
 #' 
 #' For a MIL data set, we want to ensure that any cross validation is done at

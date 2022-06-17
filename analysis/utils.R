@@ -26,9 +26,9 @@ methods_to_show <- function() {
     ~method, ~short_name, ~color,
     "MIOR (corrected)", "MIOR (corrected)", "#1b9e77",
     "MIOR (xiao)", "MIOR (as written)", "#d95f02",
-    "OMISVM", "MISVM ORDINAL (proposed)", "#7570b3",
+    "SVOR_EXC", "SVOR EXC", "#66a61e",
     "MISVM_OROVA", "MISVM OVA", "#e7298a",
-    "SVOR_EXC", "SVOR EXC", "#66a61e"
+    "OMISVM", "MISVM ORDINAL (proposed)", "#7570b3"
   )
 }
 
@@ -47,6 +47,27 @@ average_metric_over <- function(df, grp_vars, metric_vars = c("mae", "mzoe")) {
     ))
 }
 
+process_data_amrev <- function(result) {
+  res1 <- result %>%
+    hoist(control, "option") %>%
+    mutate(
+      train_name = str_replace_all(train_name, "video_surveillance", "video-surveillance"), 
+      method_name = glue(
+        "{str_to_upper(fun_name)}",
+        "{ifelse(is.na(option), '', glue(' ({option})'))}",
+      ),
+      dataset = map_chr(train_name, 
+                        ~str_split_fixed(.x, "_", 6) %>% .[, 4]),
+      version = map_chr(train_name, ~extract_from_string(.x, i = 5, n_under = 6)),
+      nbag = map_chr(train_name, ~extract_from_string(.x, i = 6, n_under = 6))
+    ) %>%
+    select(method_name, sim, everything()) 
+  
+  grp_vars <- c("method_name", "fun", "method", "option", 
+                "dataset", "version", "nbag", "metric")
+  average_metric_over(res1, grp_vars)
+}
+
 process_data_tma <- function(result) {
   res1 <- result %>% 
     hoist(control, "option", "sigma", .remove = FALSE) %>% 
@@ -62,7 +83,7 @@ process_data_tma <- function(result) {
   average_metric_over(res1, grp_vars)
 }
 
-process_data_size_imdb <- function(result, metric) {
+process_data_size_imdb <- function(result) {
   res1 <- result %>% 
     hoist(control, "option") %>%
     mutate(
@@ -117,6 +138,33 @@ process_data_wr <- function(result) {
   average_metric_over(res1, grp_vars)
 }
 
+
+plot_data_amrev <- function(result, .metric) {
+  plot_data <- result %>% 
+    filter(metric == .metric)
+  
+  plot_data %>% 
+    ggplot(aes(x = mean_metric, y = method_name, color = method_name)) +
+    geom_beeswarm(alpha = 0.5, groupOnX = FALSE) +
+    stat_summary(geom = "errorbar",
+                 color = "grey20", 
+                 fun.min = ~mean(.x, na.rm = TRUE),
+                 fun.max = ~mean(.x, na.rm = TRUE)
+    ) +
+    geom_vline(xintercept = 0, color = "grey70") +
+    facet_wrap(~str_to_title(dataset)) +
+    scale_x_continuous(limits = c(0, max(plot_data[["mean_metric"]], na.rm = TRUE))) +
+    scale_y_discrete(limits = methods_to_show()$method,
+                     labels = methods_to_show()$short_name) +
+    scale_color_manual(name = NULL,
+                       limits = methods_to_show()$method,
+                       labels = methods_to_show()$short_name,
+                       values = methods_to_show()$color) +
+    theme_light() + 
+    theme(legend.position = "none") +
+    labs(x = str_to_upper(.metric),
+         y = NULL)
+}
 
 plot_data_tma <- function(df, .metric) {
   df %>% 
