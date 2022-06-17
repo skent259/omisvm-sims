@@ -32,6 +32,20 @@ methods_to_show <- function() {
   )
 }
 
+#' Average metric variables after grouping 
+average_metric_over <- function(df, grp_vars, metric_vars = c("mae", "mzoe")) {
+  df %>%
+    group_by(across(all_of(grp_vars))) %>%
+    summarize(
+      across(all_of(metric_vars), ~mean(.x, na.rm = TRUE)),
+      time = sum(time, na.rm = TRUE) + sum(time_sum, na.rm = TRUE),
+      .groups = "drop"
+    ) %>% 
+    mutate(mean_metric = case_when(
+      metric == "mae" ~ mae,
+      metric == "mzoe" ~ mzoe
+    ))
+}
 
 process_data_tma <- function(result) {
   res1 <- result %>% 
@@ -45,19 +59,26 @@ process_data_tma <- function(result) {
     select(method_name, sim, everything()) 
   
   grp_vars <- c("method_name", "fun", "method", "option", "rep", "metric")
-  metric_vars <- c("mae", "mzoe")
+  average_metric_over(res1, grp_vars)
+}
+
+process_data_size <- function(result) {
+  res1 <- result %>%
+    hoist(control, "option", "sigma", .remove = FALSE) %>%
+    mutate(
+      method_name = glue(
+        "{str_to_upper(fun_name)}",
+        "{ifelse(is.na(option), '', glue(' ({option})'))}",
+      ),
+      nbag = map_chr(train_name, ~extract_from_string(.x, i = 3, n_under = 4)),
+      ninst = map_chr(train_name, ~extract_from_string(.x, i = 4, n_under = 4)),
+      version = map_chr(train_name, ~extract_from_string(.x, i = 5, n_under = 4))
+    ) %>%
+    select(method_name, sim, everything()) 
   
-  res1 %>%
-    group_by(across(all_of(grp_vars))) %>%
-    summarize(
-      across(all_of(metric_vars), ~mean(.x, na.rm = TRUE)),
-      time = sum(time, na.rm = TRUE) + sum(time_sum, na.rm = TRUE),
-      .groups = "drop"
-    ) %>% 
-    mutate(mean_metric = case_when(
-      metric == "mae" ~ mae,
-      metric == "mzoe" ~ mzoe
-    ))
+  grp_vars <- c("method_name", "fun", "method", "option", 
+                "nbag", "ninst", "version", "metric")
+  average_metric_over(res1, grp_vars)
 }
 
 
@@ -76,25 +97,12 @@ process_data_wr <- function(result) {
   
   grp_vars <- c("method_name", "fun", "method", "option", "rep",
                 "name", "wr", "version", "metric")
-  metric_vars <- c("mae", "mzoe")
-  
-  res1 %>%
-    group_by(across(all_of(grp_vars))) %>%
-    summarize(
-      across(all_of(metric_vars), ~mean(.x, na.rm = TRUE)),
-      time = sum(time, na.rm = TRUE) + sum(time_sum, na.rm = TRUE),
-      .groups = "drop"
-    ) %>% 
-    mutate(mean_metric = case_when(
-      metric == "mae" ~ mae,
-      metric == "mzoe" ~ mzoe
-    ))
+  average_metric_over(res1, grp_vars)
 }
 
-
-plot_data_tma <- function(df, metric) {
+plot_data_tma <- function(df, .metric) {
   df %>% 
-    filter(metric == metric) %>% 
+    filter(metric == .metric) %>% 
     ggplot(aes(x = mean_metric, 
                y = method_name, 
                color = method_name)) +
@@ -114,14 +122,34 @@ plot_data_tma <- function(df, metric) {
                        values = methods_to_show()$color) +
     theme_light() +
     theme(legend.position = "none") +
-    labs(x = str_to_upper(metric),
+    labs(x = str_to_upper(.metric),
          y = NULL)
 }
 
-
-plot_data_wr <- function(df, metric) {
+plot_data_size <- function(df, .metric) {
   df %>% 
-    filter(metric == metric) %>% 
+    filter(metric == .metric) %>% 
+    mutate(`N Inst` = as.numeric(ninst)) %>% 
+    ggplot(aes(x = as.numeric(nbag), y = mean_metric, color = method_name)) +
+    geom_hline(yintercept = 0, color = "grey70") +
+    ggbeeswarm::geom_quasirandom(width = 5, alpha = 0.1) +
+    stat_summary(geom = "line", fun = mean, size = 1.2) +
+    scale_x_continuous(breaks = seq(30, 300, by = 30)) + 
+    scale_color_manual(name = NULL,
+                       limits = rev(methods_to_show()$method),
+                       labels = rev(methods_to_show()$short_name),
+                       values = rev(methods_to_show()$color)) +
+    facet_wrap(~`N Inst`, scales = "free_x", labeller = "label_both") + 
+    theme_light() + 
+    theme(legend.position = "top") +
+    labs(x = "Number of training bags",
+         y = str_to_upper(.metric))
+}
+
+
+plot_data_wr <- function(df, .metric) {
+  df %>% 
+    filter(metric == .metric) %>% 
     ggplot(aes(x = as.numeric(wr), 
                y = mean_metric, 
                color = method_name)) +
@@ -136,9 +164,8 @@ plot_data_wr <- function(df, metric) {
     theme_minimal() +
     theme(legend.position = "top") +
     labs(x = "Witness Rate",
-         y = str_to_upper(metric))
+         y = str_to_upper(.metric))
 }
-
 
 #' Plot AUC vs Method with facets
 #' 
