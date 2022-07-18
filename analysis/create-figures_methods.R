@@ -132,14 +132,13 @@ ggsave(here(fig_dir, "related-work_data-replication.pdf"), p8, width = 8, height
 make_data2 <- function(n, seed) {
   set.seed(seed)
   x <- runif(n, 0, 3)
-  y <- runif(n, 0, 1)
+  bag <- sample(rep(seq_len(n/10), 10))
   class <- rep(3, n)
   class[which(x < 2)] <- 2
   class[which(x < 1)] <- 1
   
-  d <- tibble(x1 = x, x2 = y, y = class)
+  d <- tibble(x1 = x, b = bag, y = class)
   d <- expand_grid(d, h = c(0, 1))
-  # d <- d
 }
 
 remove_close_points <- function(data, thresh = 0.25) {
@@ -167,21 +166,34 @@ remove_close_points <- function(data, thresh = 0.25) {
   return(data)
 }
 
-plot_data <- make_data2(n = 100, seed = 10)
+plot_data <- make_data2(n = 50, seed = 10)
 plot_data <- remove_close_points(plot_data, thresh = 0.2)
-n <- nrow(plot_data)
-plot_data$b <- rep(seq_len(ceiling(nrow(plot_data) / 8)), each = 8)[1:n]
+plot_data <- plot_data %>% group_by(b) %>% slice_head(n = 8) %>% ungroup() 
 
 # misc edits to get the points to match what I need 
-plot_data <- within(plot_data, x2[y == 2] <- pmax(x2[y == 2] + 0.1), 1)
-plot_data <- within(plot_data, x1[which(y == 3 & x1 < 2.2)] <- 2.2)
-plot_data <- within(plot_data, x1[which(y == 2 & x1 > 1.8)] <- c(2.1, 2.1, 1.8, 1.8))
-plot_data <- within(plot_data, x1[which(y == 2 & x1 < 1.2)][1:2] <- c(1.2, 1.2))
-plot_data <- within(plot_data, y[which(y == 1 & x1 > 0.85)] <- 3)
-plot_data <- within(plot_data, x1[which(y == 1 & x1 > 0.80)] <- 0.8)
-plot_data <- within(plot_data, y[which(y == 2 & x1 < 1.2)][3:4] <- 1)
-plot_data <- within(plot_data, x2[which(b == 8 & x1 < 1.3 & x1 > 1.1)] <- 0.27)
-plot_data <- within(plot_data, b[which(b == 8 & y == 3)] <- 7)
+plot_data[3:4, "y"] <- 3 # bag 1
+plot_data[13:14, "y"] <- 1 # bag 2
+plot_data[13:14, "x1"] <- 1.10 # bag 2
+plot_data[9:10, "x1"] <- 0.396 # bag 2
+plot_data[19:20, "x1"] <- 0.80 # bag 3 
+plot_data[21:22, "x1"] <- 1.80 # bag 3
+plot_data[31:32, "y"] <- 3 # bag 4
+plot_data[31:32, "x1"] <- 1.08 # bag 4
+plot_data[25:26, "x1"] <- 2.62 # bag 4
+plot_data[25:26, "y"] <- 3 # bag 4
+plot_data[35:36, "y"] <- 2 # bag 5
+plot_data[37:38, "y"] <- 1 # bag 5
+plot_data[37:38, "x1"] <- 0.966 # bag 5
+
+# re-order for better flow in text
+plot_data <- plot_data %>% 
+  mutate(b2 = case_when(
+    b == 5 ~ 1, 
+    b == 1 ~ 2,
+    b == 3 ~ 3,
+    b == 4 ~ 4,
+    b == 2 ~ 5
+  ))
 
 plot_data <- plot_data %>% 
   group_by(b) %>% 
@@ -201,19 +213,19 @@ plot_data <- plot_data %>%
 # Frame data 
 frame_data <- 
   expand_grid(x1 = seq(0, 3, by = 0.1), 
-              x2 = seq(0, 1, by = 0.1)) %>% 
+              b2 = seq(0, 5, by = 0.7)) %>% 
   mutate(h = x1 - 1) %>% 
   filter(h >= 0, h <= 1)
 
 frame_line <- function(x1, x2, h) {
-  expand_grid(x1 = x1, x2 = x2, h = h) %>% 
+  expand_grid(x1 = x1, b2 = x2, h = h) %>% 
     add_dummy()
 }
 
 add_dummy <- function(data) {
   data %>% 
-    bind_rows(c(x1 = 0.0433, x2 = 0.03, h = 0)) %>% 
-    bind_rows(c(x1 = 2.8639, x2 = 0.07, h = 1))
+    bind_rows(c(x1 = range(plot_data$x1)[1], b2 = 0.03, h = 0)) %>% 
+    bind_rows(c(x1 = range(plot_data$x1)[2], b2 = 0.07, h = 1))
 }
 
 my_scales <- list(
@@ -222,57 +234,62 @@ my_scales <- list(
 )
 
 p9.1 <-
-  ggplot(plot_data, aes(x1, x2, shape = y, color = y)) + 
+  ggplot(plot_data, aes(x1, 5.5-b2, shape = y, color = y)) + 
   geom_vline(xintercept = c(1, 2),
              size = 1, color = "grey70") + 
   geom_vline(xintercept = as.numeric(outer(c(1, 2), 0.2*c(-1, 1), `+`)), 
              color = "grey80") + 
   geom_point(size = 7) +
   geom_point(size = 7, stroke = 1.5, data = plot_data %>% filter(rep)) +
-  geom_text(aes(label = b), color = "black") + 
+  geom_text(aes(label = b2), color = "black") + 
   scale_x_continuous(
     breaks = as.numeric(outer(0.2*c(-1, 0, 1), c(1, 2), `+`)), 
-    labels = TeX(paste0("-", c("(b_1 - 1)", "b_1", "(b_1 + 1)", "(b_2 - 1)", "b_2", "(b_2 + 1)"))) 
+    labels = TeX(paste0("-", c("b_1 - 1", "b_1", "b_1 + 1", "b_2 - 1", "b_2", "b_2 + 1"))) 
   ) + 
-  expand_limits(x = c(0,3), y = c(0, 1)) + 
+  expand_limits(x = c(0,3), y = c(0, 5)) + 
   my_scales + 
   theme_classic() + 
   theme(legend.position = "bottom",
         axis.ticks = element_blank(),
         axis.text.y = element_blank(),
         axis.line.y = element_blank()) +
-  coord_fixed() +
+  # coord_fixed() +
   labs(
     x = expression(f(x) == group(langle, list(w, x), rangle)),
     y = NULL,
     title = "A. Initial data and constraints"
   )
 
-std_ar <- arrow(length = unit(1, "mm"), ends = "both")
-x_eps <- 0.05
-
-my_segment <- function(x, x2, y, label, vjust = -0.2) {
+# Add segments
+my_arrow <- function(x, x2, y, label, vjust = -0.2, ...) {
+  std_ar <- arrow(length = unit(1, "mm"), ends = "both")
   list(
     annotate(x = x, y = y, xend = x2, yend = y, 
-             geom = "segment", arrow = std_ar),
+             geom = "segment", ..., arrow = std_ar),
     annotate(x = mean(c(x, x2)), y = y,
              geom = "text", label = label, vjust = vjust)  
   )
 }
+my_segment <- function(x, x2, y, label, vjust = -0.2) {
+  list(
+    annotate(x = x, y = y, xend = x2, yend = y, 
+             geom = "segment", linetype = "dotted")
+  )
+}
+x_eps <- 0.055
 
-p9.1 <- p9.1 + 
-  my_segment(0.970, 2, 0.06, "") +
-  my_segment(0.970, 1.2, 0.10, "") +
-  my_segment(0.8, 1.12 - x_eps, 0.27, TeX("$\\xi_8^1$")) +
-  my_segment(1.07+x_eps, 1.2, 1.05, "", vjust = 1.3) +
-  my_segment(1.8, 2.1 - x_eps, 0.794, TeX("$\\xi_2^2$"))
-# my_segment(0.970, 2, 0.06, TeX("$\\xi_1^{*2}$")) +
-#   my_segment(0.970, 1.2, 0.10, TeX("$\\xi_1^{*1}$")) +
-#   my_segment(0.8, 1.12 - x_eps, 0.27, TeX("$\\xi_8^1$")) +
-#   my_segment(1.07+x_eps, 1.2, 1.05, TeX("$\\xi_5^{*1}$"), vjust = 1.3) +
-#   my_segment(1.8, 2.1 - x_eps, 0.794, TeX("$\\xi_2^2$")) 
-
-# plot_data %>% arrange(y, x1) %>% print(n = Inf)
+p9.1 <-
+  p9.1 + 
+    my_arrow(0.8, 0.966-x_eps, 5.5-1, TeX("$\\xi_1^1$")) +
+    my_arrow(1.8, 2.08-x_eps, 5.5-1, TeX("$\\xi_1^2$")) +
+    my_segment(1.2, 1.07+x_eps, 5.5-2, "") +
+    my_arrow(2.2, 1.70+x_eps, 5.5-2, TeX("$\\xi_2^{*2}$")) + 
+    my_segment(1.2, 1.08+x_eps/2, 5.5-3.85, "") +
+    my_segment(2.2, 1.08+x_eps, 5.5-4, "") +
+    my_arrow(0.8, 1.1-x_eps, 5.5-5, TeX("$\\xi_5^1$"))
+    
+  
+# plot_data %>% mutate(row = row_number()) %>% arrange(b2, x1) %>% print(n = Inf)
 
 theta <- -5
 phi <- 0
@@ -295,10 +312,10 @@ line_frame <- function(x1, h, theta, phi, ...) {
 }
 
 p9.2 <-
-  ggplot(plot_data, aes(x=x1, y=x2, z=h)) + 
+  ggplot(plot_data, aes(x=x1, y=5.5-b2, z=h)) + 
   stat_3D(aes(shape = y, color = y), theta = theta, phi = phi,
           size = 5) +
-  stat_3D(aes(label = b), theta = theta, phi = phi,
+  stat_3D(aes(label = b2), theta = theta, phi = phi,
           geom = "text") +
   stat_wireframe(color = "grey70",
                  theta = theta, phi = phi, 
@@ -326,10 +343,10 @@ my_scales2 <- list(
 )
 
 p9.3 <-
-  ggplot(plot_data, aes(x1, x2, z = h)) +
+  ggplot(plot_data, aes(x1, 5.5-b2, z = h)) +
   stat_3D(aes(color = yb, shape = yb), theta = theta, phi = phi,
           size = 3) +
-  stat_3D(aes(label = b), theta = theta, phi = phi,
+  stat_3D(aes(label = b2), theta = theta, phi = phi,
           geom = "text", vjust = 0, hjust = -1) +
   stat_wireframe(color = "grey70",
                  theta = theta, phi = phi, 
