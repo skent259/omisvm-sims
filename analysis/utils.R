@@ -26,9 +26,9 @@ methods_to_show <- function() {
     ~method, ~short_name, ~color,
     "MIOR (corrected)", "MIOR (corrected)", "#1b9e77",
     "MIOR (xiao)", "MIOR (as written)", "#d95f02",
-    "SVOR_EXC", "SVOR EXC", "#66a61e",
-    "MISVM_OROVA", "MISVM OVA", "#e7298a",
-    "OMISVM", "MISVM ORDINAL (proposed)", "#7570b3"
+    "SVOR_EXC", "SI-SVOREXC", "#66a61e",
+    "MISVM_OROVA", "MI-SVM (OVA)", "#e7298a",
+    "OMISVM", "OMI-SVM (proposed)", "#7570b3"
   )
 }
 
