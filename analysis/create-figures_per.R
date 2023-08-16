@@ -40,6 +40,7 @@ p2 <- imap(metrics, ~plot_data_tma(results_mod, .x))
 p_tma <- p2$mzoe / p2$mae 
 print(p_tma)
 
+saveRDS(results_mod, here(res_dir, "per-tma_results-mod.rds"))
 ggsave(here(fig_dir, "per-tma_both-vs-methods.pdf"), p_tma, width = 8, height = 3)
 
 
