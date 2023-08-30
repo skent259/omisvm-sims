@@ -4,7 +4,7 @@ Striving for reproducibility, this repo details the simulations for *Ordinal Mul
 
 As a quick reference for getting started:
 
-* The experimens can be run via the `run.sh` file, however this will take considerable CPU time. We recommend that you run in a high-throughput environment in batches (see `run.sh` for inspiration)
+* The experiments can be run via the `run.sh` file, however this will take considerable CPU time. We recommend that you run in a high-throughput environment in batches (see `run.sh` for inspiration)
 * Figures from the paper can be recreated by running `analysis/create-all-figures.R`.
 * Data (open-source) can be downloaded by running `data/build-data.sh`. 
 * Simulation source code can be found in the `sim/` directory.
