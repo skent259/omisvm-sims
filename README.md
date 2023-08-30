@@ -35,6 +35,16 @@ The main model code relies on the `mildsvm` package (v0.4.0) in R, which can be 
 | CAR                   | Witness rate changes | wr-car    | 6.0 | Appendix   |
 | ERA                   | Witness rate changes | wr-era    | 7.0 | Appendix   |
 
+Most data from the experiments is available from open-source repositories:
+
+* Amazon review ratings: <http://sifaka.cs.uiuc.edu/~wang296/Data/> (Wang et al. 2011)
+* IMDB movie reviews: <https://ai.stanford.edu/~amaas/data/sentiment/> (Maas et al. 2011)
+* winequality-red: <https://archive.ics.uci.edu/ml/datasets/Wine+Quality> (Cortez et al. 2009)
+* SWD: <https://www.openml.org/d/1028> 
+* CAR: <https://www.openml.org/d/40975> (Bohanec and Rajkovič, 1988; Dua and Graff, 2017)
+* ERA: <https://www.openml.org/d/1030>
+
+The TMA data set is not publicly available due to privacy restrictions. It can be made available from the authors.
 
 ## References
 
@@ -49,3 +59,13 @@ The main model code relies on the `mildsvm` package (v0.4.0) in R, which can be 
 [5] Alpaydın, E., Cheplygina, V., Loog, M., & Tax, D. M. J. (2015). Single- vs. Multiple-instance classification. *Pattern Recognition*, *48*(9), 2831–2838. https://doi.org/10.1016/j.patcog.2015.04.006
 
 [6] Xiao, Y., Liu, B., & Hao, Z. (2018). Multiple-instance ordinal regression. *IEEE Transactions on Neural Networks and Learning Systems*, *29*(9), 4398–4413. https://doi.org/10.1109/TNNLS.2017.2766164
+
+[7] Wang, H., Wang, C., Zhai, C., & Han, J. (2011). Learning online discussion structures by conditional random fields. *Proceedings of the 34th International Acm Sigir Conference on Research and Development in Information Retrieval*, 435–444. https://doi.org/10.1145/2009916.2009976
+
+[8] Maas, A., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y., & Potts, C. (2011). Learning word vectors for sentiment analysis. *Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies*, 142–150.
+
+[9] Cortez, P., Cerdeira, A., Almeida, F., Matos, T., & Reis, J. (2009). Modeling wine preferences by data mining from physicochemical properties. *Decision Support Systems*, 47(4), 547–553. https://doi.org/10.1016/j.dss.2009.05.016
+
+[10] Bohanec, M., & Rajkovič, V. (1988). Knowledge acquisition and explanation for multi-attribute decision. *8th International Workshop on Expert Systems and Their Applications*, 1, 59–78.
+
+[11] Dua, D., & Graff, C. (2017). UCI Machine Learning Repository. University of California, Irvine, School of Information and Computer Sciences. http://archive.ics.uci.edu/ml
