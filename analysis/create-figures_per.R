@@ -27,9 +27,9 @@ results <- read_results(name = "per-amrev", sim = "1.0.0", step = 2)
 results_mod <- process_data_amrev(results)
 p1 <- imap(metrics, ~plot_data_amrev(results_mod, .x))
 
-p_amrev <- p1$mzoe / p1$mae + plot_annotation(tag_levels = "A")
+p_amrev <- p1$mzoe / p1$mae
 print(p_amrev)
-ggsave(here(fig_dir, "per-amrev_both-vs-methods.pdf"), p_amrev, width = 8, height = 6, dpi = 800)
+ggsave(here(fig_dir, "per-amrev_both-vs-methods.pdf"), p_amrev, width = 8, height = 5.5, dpi = 800)
 
 
 ## per-tma 2.0.0 --------------------------------------------------------------#
