@@ -41,6 +41,6 @@ p_wr <- (((p6$mzoe + ggtitle("A. CAR data set")) / p6$mae) |
   theme(legend.position = "bottom") 
 
 print(p_wr)
-ggsave(here(fig_dir, "wr-car-era_both-vs-methods.pdf"), p_wr, width = 8, height = 6)
+ggsave(here(fig_dir, "wr-car-era_both-vs-methods.pdf"), p_wr, width = 8, height = 6, dpi = 800)
 
 

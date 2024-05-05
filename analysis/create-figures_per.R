@@ -29,7 +29,7 @@ p1 <- imap(metrics, ~plot_data_amrev(results_mod, .x))
 
 p_amrev <- p1$mzoe / p1$mae + plot_annotation(tag_levels = "A")
 print(p_amrev)
-ggsave(here(fig_dir, "per-amrev_both-vs-methods.pdf"), p_amrev, width = 6, height = 6)
+ggsave(here(fig_dir, "per-amrev_both-vs-methods.pdf"), p_amrev, width = 8, height = 6, dpi = 800)
 
 
 ## per-tma 2.0.0 --------------------------------------------------------------#
@@ -41,6 +41,6 @@ p_tma <- p2$mzoe / p2$mae
 print(p_tma)
 
 saveRDS(results_mod, here(res_dir, "per-tma_results-mod.rds"))
-ggsave(here(fig_dir, "per-tma_both-vs-methods.pdf"), p_tma, width = 8, height = 3)
+ggsave(here(fig_dir, "per-tma_both-vs-methods.pdf"), p_tma, width = 8, height = 3, dpi = 800)
 
 

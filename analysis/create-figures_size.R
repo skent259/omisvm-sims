@@ -33,7 +33,7 @@ p_imdb <- (p3$mzoe | p3$mae) +
   plot_layout(guides = 'collect') & theme(legend.position = "top") 
 
 print(p_imdb)
-ggsave(here(fig_dir, "size-imdb_both-vs-methods.pdf"), p_imdb, width = 8, height = 3.5)
+ggsave(here(fig_dir, "size-imdb_both-vs-methods.pdf"), p_imdb, width = 8, height = 3.5, dpi = 800)
 
 
 ## size-swd 4.0.0 -------------------------------------------------------------#
@@ -55,7 +55,7 @@ p_size <- (((p5$mzoe + ggtitle("A. Wine-quality data set")) / p5$mae) |
   theme(legend.position = "bottom") 
 
 print(p_size)
-ggsave(here(fig_dir, "size-swd-wq_both-vs-methods.pdf"), p_size, width = 8, height = 6)
+ggsave(here(fig_dir, "size-swd-wq_both-vs-methods.pdf"), p_size, width = 8, height = 6, dpi = 800)
 
 
 

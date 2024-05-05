@@ -199,10 +199,10 @@ plot_data_size_imdb <- function(result, .metric) {
     # geom_hline(yintercept = 0, color = "grey70") +
     geom_quasirandom(width = 5, alpha = 0.3) +
     stat_summary(geom = "line", fun = mean, size = 1.2) +
-    stat_summary(
-      aes(shape = method_name),
-      geom = "point", fun = mean, size = 2, color = "grey20"
-    ) +
+    # stat_summary(
+    #   aes(shape = method_name),
+    #   geom = "point", fun = mean, size = 2, color = "grey20"
+    # ) +
     scale_x_continuous(breaks = c(30, 150*(1:8))) + 
     scale_color_manual(name = NULL,
                        limits = rev(methods_to_show()$method),

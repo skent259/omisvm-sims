@@ -124,7 +124,7 @@ p8 <-
 p8[[1]] <- p8[[1]] + theme(legend.position = "none") # stupid fix
 p8
 
-ggsave(here(fig_dir, "related-work_data-replication.pdf"), p8, width = 8, height = 6)
+ggsave(here(fig_dir, "related-work_data-replication.pdf"), p8, width = 8, height = 6, dpi = 800)
 
 
 ## OMISVM intuition -----------------------------------------------------------#
@@ -383,4 +383,4 @@ p9 <-
 p9[[1]] <- p9[[1]] + theme(legend.position = "none") # stupid fix
 p9
 
-ggsave(here(fig_dir, "methods_data-replication-or.pdf"), p9, width = 8, height = 10)
+ggsave(here(fig_dir, "methods_data-replication-or.pdf"), p9, width = 8, height = 10, dpi = 800)
